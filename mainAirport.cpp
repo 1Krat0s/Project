@@ -15,6 +15,7 @@ int main(void){
         std::cout << "NOT FOUND" << std::endl;
     }
     simGraph.displayConnectionCounts();
+    simGraph.shortestPath("IAD","MIA");
 
 
 }

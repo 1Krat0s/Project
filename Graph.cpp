@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <sstream>
+#include "Queue.hpp"
 
 // finds the id of the aiport
 int Graph::findAirportIndex(const std::string& code) const {
@@ -11,6 +12,61 @@ int Graph::findAirportIndex(const std::string& code) const {
         if (airports[i].getCode() == code) return i;
     }
     return -1;
+}
+// find the shortest path
+void Graph::shortestPath(const std::string& startcode, const std::string& endcode){
+    int start = findAirportIndex(startcode);
+    int end = findAirportIndex(endcode);
+    if (start == -1 || end == -1){
+        std::cout << "ERROR: AIRPORT CODES INCORRECT" << std::endl;
+        return;
+    }
+    std::vector<int> distance(airports.size(), 5000000); // longest possible path of distance
+    std::vector<int> parent(airports.size(),-1); // the actual path to find distance
+    std::vector<int> queue1;
+    distance[start] = 0;
+    queue1.push_back(start); // begins the check
+
+    int head = 0;
+    while (head < (int)queue1.size()){
+        int u = queue1[head];
+        head++;
+        
+        const std::vector<Airplane>& curFlight = airports[u].getFlights();
+
+        for (int i = 0; i < (int)curFlight.size(); i++){
+            Airplane flight = curFlight[i];
+            int ex = flight.getDestinationIndex();
+            int miles = flight.getDistance();
+
+            // updates path to the ex IF its a shorter path
+            if (distance[u] + miles < distance[ex]) {
+                distance[ex] = distance[u] + miles;
+                parent[ex] = u;
+                queue1.push_back(ex); // Adds to a long list to later check
+            }
+
+
+        }
+
+    }
+    if (distance[end] == 5000000 ){ // means nothing changed which means not path exist
+        std::cout << "NO PATH EXISTS" << std::endl;
+    }
+    else {
+        std::vector<std::string> path;
+        int follow = end; // goes through the path from end to start
+        while (follow != -1){
+            path.push_back(airports[follow].getCode());
+            follow = parent[follow];
+        }
+        std::cout << "shortest distance is : " << distance[end] << " miles" << std::endl;
+        std::cout << " using route: ";
+        for (int i = (int)path.size() - 1; i >= 0; i--) {
+            std::cout << path[i] << (i == 0 ? "" : " -> "); // gives every airport its going thorugh to find the path
+        }
+        std::cout << std::endl;
+    }
 }
 
 //Load CSV

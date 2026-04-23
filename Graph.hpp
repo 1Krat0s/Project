@@ -20,6 +20,9 @@ class Graph
     public:
         // Task 1: Construct weighted directed graph from CSV 
         bool loadFromCSV(const std::string& filename);
+
+        // task 2 to find shortest distance
+        void shortestPath(const std::string& startcode, const std::string& endcode);
         
         // Task 5: Calculate and sort connections 
         void displayConnectionCounts() const;
