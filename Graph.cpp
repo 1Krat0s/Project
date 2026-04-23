@@ -23,8 +23,10 @@ void Graph::shortestPath(const std::string& startcode, const std::string& endcod
     }
     std::vector<int> distance(airports.size(), 5000000); // longest possible path of distance
     std::vector<int> parent(airports.size(),-1); // the actual path to find distance
+    std::vector<int> cost(airports.size(),0); // cost of the path
     std::vector<int> queue1;
     distance[start] = 0;
+    cost[start] = 0;
     queue1.push_back(start); // begins the check
 
     int head = 0;
@@ -38,11 +40,13 @@ void Graph::shortestPath(const std::string& startcode, const std::string& endcod
             Airplane flight = curFlight[i];
             int ex = flight.getDestinationIndex();
             int miles = flight.getDistance();
+            int price = flight.getCost();
 
             // updates path to the ex IF its a shorter path
             if (distance[u] + miles < distance[ex]) {
                 distance[ex] = distance[u] + miles;
                 parent[ex] = u;
+                cost[ex] = cost[u] + price;
                 queue1.push_back(ex); // Adds to a long list to later check
             }
 
@@ -60,7 +64,7 @@ void Graph::shortestPath(const std::string& startcode, const std::string& endcod
             path.push_back(airports[follow].getCode());
             follow = parent[follow];
         }
-        std::cout << "shortest distance is : " << distance[end] << " miles" << std::endl;
+        std::cout << "shortest distance is : " << distance[end] << " miles" <<". The cost is " << cost[end] << std::endl;
         std::cout << " using route: ";
         for (int i = (int)path.size() - 1; i >= 0; i--) {
             std::cout << path[i] << (i == 0 ? "" : " -> "); // gives every airport its going thorugh to find the path
