@@ -133,3 +133,164 @@ void Graph::displayConnectionCounts() const {
 int Graph::getNumAirports() const { 
     return airports.size(); 
 }
+
+//origin airport to all airports in state (TC)
+void Graph::allState(const std::string& origin, const std::string& stateAbb){
+    std::vector<Airport> dests; //vector to store all the airports in the given state
+    for (int i = 0; i < airports.size(); i++) {
+        if(airports[i].getCity() == stateAbb){ //checks if the state stored in the current airport matches the given state
+            dests.push_back(airports[i]); //adds airports to dests
+        }
+    }
+    std::cout << "Shortest paths from " << origin <<  " to " <<  stateAbb << " state airports are:\n";
+    for (int i = 0; i < dests.size(); i++){ //iterates through all airports in state
+        std::cout << "From " << origin << " to " << dests[i].getCode() << std::endl;
+        shortestPath(origin, dests[i].getCode()); //sends current airport and origin airport to the shortest path function
+        std::cout << std::endl;
+    }
+}
+
+//Returns the shortest path with the given number of stops (TC)
+void Graph::shortestPathStops(const std::string& origin, const std::string& dest, int stops){
+    //shortest path with specified stops based on distance
+
+    //finds the start and end indices
+    int start = findAirportIndex(origin); 
+    int end = findAirportIndex(dest);
+
+    std::vector<std::vector<int>> v = AllPathsStops(start, end, stops); //get paths in index form
+
+    //checks that at least one path was returned
+    if(v.empty()){
+        //output for no path found
+        std::cout << "Shortest route from " << origin << " to " << dest << " with " << stops << " stops: None.\n";
+        return;
+    }
+
+    //intialization for distance, cost, and final index
+    std::vector<int> dist(v.size(), 0);
+    std::vector<int> cost (v.size(), 0);
+    int distance = 5000000;
+    int endcost = 0;
+    int idx = 0;
+
+    //Iterates through the returned routes
+    for(int i = 0; i < v.size(); i++){
+        for(int j = 0; j < v[i].size(); j++){ //index of stops in path
+            Airplane plane = getPlane(v[i][j], v[i][j+1]);
+            //stores the distance and cost of the current route
+            dist[i] = dist[i] + plane.getDistance();
+            cost[i] = cost[i] + plane.getCost();
+        }
+
+        //compares the distance and saves the smallest
+        if(dist[i] < distance){
+            distance = dist[i];
+        }
+        //stores the cost and index for the smallest distance
+        if(dist[i] == distance){
+            endcost = cost[i];
+            idx = i;
+        }
+    }
+    //outputs the final path
+    std::cout << "Shortest route from " << origin << " to " << dest << " with " << stops << " stops: ";
+    for(int k = 0; k < v[idx].size(); k++){
+        if(k == v[idx].size() -1 ){
+            std::cout << airports[v[idx][k]].getCode();
+        }
+        else{
+            std::cout << airports[v[idx][k]].getCode() << "->";
+        }
+    }
+    
+    //outputs the final distance and cost
+    std::cout << ". The length is: " << distance;
+    std::cout << ". The cost is: " << endcost << ".\n";
+}
+
+//takes two airport indexes and returns the plane between them (TC)
+Airplane Graph::getPlane(int airport1, int airport2){ 
+    std::vector<Airplane> v = airports[airport1].getFlights();
+    Airplane b (0,0,0);
+    for(Airplane a : v){
+        if(a.getDestinationIndex() == airport2){
+            return a;
+        }
+    }
+    return b; //returns an empty plane if the second airport is not found
+}
+
+//Finds all possible routes between two points with a given number of stops (TC)
+std::vector<std::vector<int>> Graph::AllPathsStops(int start, const int dest, int stops) const{
+    std::vector<std::vector<int>> allRoutes; //vector for storing all routes
+    Queue<std::vector<int>> q; //queue for temporary tracking
+    q.enqueue({start}); //the starting airport loaded into the queue
+
+    int lim = 0;
+    while(!q.isEmpty() ){
+        lim++;
+       std::vector<int> route = q.front(); //begins the route with the front of the queue
+       q.dequeue(); //removes the front from the queue
+       int cur = route.back(); //sets the current value
+       
+       //checks if the current value is the destination and if it has the correct amount of stops
+       if(cur == dest && route.size() == stops + 2){ 
+        allRoutes.push_back(route);
+       }
+
+       //iterates through the neighbors (flights) of the current airport 
+       for(Airplane a : airports[cur].getFlights()){
+       std::vector<int> newRoute = route; //creates a new variable with the route
+
+        //checks that the flight is not the start and makes sure that stops have not exceeded the limit
+        if(a.getDestinationIndex() != start && newRoute.size() <= (stops+2)){
+            newRoute.push_back(a.getDestinationIndex()); //adds the stop to the new route
+            q.enqueue(newRoute); //adds the newroute to the queue
+        }
+    }
+}
+    return allRoutes; //returns all the possible routes with the given number of stops
+
+}
+
+
+// task 6
+
+void Graph::undirectedGraph(){
+    int numAir = (int)airports.size();
+    // creates a matrix 2x2 hopefully
+    std::vector<std::vector<int>> matrix(numAir , std::vector<int>(numAir,-1));
+
+    for (int i = 0; i < numAir; i++){
+        const std::vector<Airplane>& flight = airports[i].getFlights();
+        // checks every flight leaving insert j airport
+        for (int j = 0; j <(int)flight.size();j++){
+            Airplane currFlight = flight[j];
+            int v = currFlight.getDestinationIndex();
+            int cost = currFlight.getCost();
+            int row = 0;
+            int col = 0;
+            if (i < v){
+                row = i;
+                col = v;
+            }
+            else {
+                row = v;
+                col = i;
+            }
+            if (matrix[row][col] == -1 || cost < matrix[row][col]) {
+                matrix[row][col] = cost;
+            }
+
+        }
+    }
+    for (int i = 0; i < numAir; i++){
+        for (int j = 0; j < numAir; j++){
+            if (matrix[i][j] != -1){ // checks if a connections even exists
+                std::cout << "AIRPORT: "<< airports[i].getCode() << "----- " << "AIRPORT: " << airports[j].getCode() << std::endl;
+                std::cout << "The Cost is: " << matrix[i][j] << std::endl;
+            }
+        }
+    }
+}
