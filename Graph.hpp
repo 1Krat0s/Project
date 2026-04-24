@@ -23,6 +23,8 @@ class Graph
 
         // task 2 to find shortest distance
         void shortestPath(const std::string& startcode, const std::string& endcode);
+        // task 6 creates a undirected graph
+        void undirectedGraph();
         
         // Task 5: Calculate and sort connections 
         void displayConnectionCounts() const;

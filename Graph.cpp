@@ -133,3 +133,43 @@ void Graph::displayConnectionCounts() const {
 int Graph::getNumAirports() const { 
     return airports.size(); 
 }
+
+void Graph::undirectedGraph(){
+    int numAir = (int)airports.size();
+    // creates a matrix 2x2 hopefully
+    std::vector<std::vector<int>> matrix(numAir , std::vector<int>(numAir,-1));
+
+    for (int i = 0; i < numAir; i++){
+        const std::vector<Airplane>& flight = airports[i].getFlights();
+        // checks every flight leaving insert j airport
+        for (int j = 0; j <(int)flight.size();j++){
+            Airplane currFlight = flight[j];
+            int v = currFlight.getDestinationIndex();
+            int cost = currFlight.getCost();
+            int row = 0;
+            int col = 0;
+            if (i < v){
+                row = i;
+                col = v;
+            }
+            else {
+                row = v;
+                col = i;
+            }
+            if (matrix[row][col] == -1 || cost < matrix[row][col]) {
+                matrix[row][col] = cost;
+            }
+
+        }
+    }
+    for (int i = 0; i < numAir; i++){
+        for (int j = 0; j < numAir; j++){
+            if (matrix[i][j] != -1){ // checks if a connections even exists
+                std::cout << "AIRPORT: "<< airports[i].getCode() << "----- " << "AIRPORT: " << airports[j].getCode() << std::endl;
+                std::cout << "The Cost is: " << matrix[i][j] << std::endl;
+            }
+        }
+    }
+}
+
+

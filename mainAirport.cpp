@@ -16,6 +16,7 @@ int main(void){
     }
     simGraph.displayConnectionCounts();
     simGraph.shortestPath("IAD","MIA");
+    simGraph.undirectedGraph();
 
 
 }
