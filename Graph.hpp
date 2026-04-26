@@ -20,6 +20,8 @@ class Graph
         std::vector<std::vector<int>> AllPathsStops(int start, const int dest, int stops) const;
 
     public:
+        
+
         // Task 1: Construct weighted directed graph from CSV 
         bool loadFromCSV(const std::string& filename);
 
@@ -38,12 +40,15 @@ class Graph
 
         //task 4 - shortest path with stops
         void shortestPathStops(const std::string& origin, const std::string& dest, int stops);
+<<<<<<< HEAD
 
         // Task 7: Generate MST using Prim's algorithm
         void primMST() const;
 
         // Task 8: Generate MSF using Kruskal's algorithm
         void kruskalMSF() const;
+=======
+>>>>>>> e177b6fba94d5b21afdbe5e9737cf83af4ad8b94
 };
 
 #endif

@@ -24,10 +24,13 @@ int main(void){
     simGraph.allState("ATL", "FL"); //task 3
     simGraph.shortestPathStops("IAD", "MIA", 3); //task 4
 
+<<<<<<< HEAD
     simGraph.primMST(); // Task 7
 
     simGraph.kruskalMSF(); // Task 8
 
+=======
+>>>>>>> e177b6fba94d5b21afdbe5e9737cf83af4ad8b94
 
 
 }
