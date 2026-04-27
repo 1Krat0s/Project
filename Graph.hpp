@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "Airport.hpp"
+#include "Queue.hpp"
 
 /*
 * Graph class manages the connectivity map.
@@ -40,15 +41,12 @@ class Graph
 
         //task 4 - shortest path with stops
         void shortestPathStops(const std::string& origin, const std::string& dest, int stops);
-<<<<<<< HEAD
 
         // Task 7: Generate MST using Prim's algorithm
         void primMST() const;
 
         // Task 8: Generate MSF using Kruskal's algorithm
         void kruskalMSF() const;
-=======
->>>>>>> e177b6fba94d5b21afdbe5e9737cf83af4ad8b94
 };
 
 #endif
